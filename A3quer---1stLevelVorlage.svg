@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 4200 2970">
+
+ <defs>
+    <style type="text/css">
+        <![CDATA[
+      @font-face {
+        font-family: "PermanentMarker";
+        src: url('fonts/PermanentMarker-Regular.woff2'); format('woff');
+        } 
+
+      @font-face {
+        font-family: 'RockSalt';
+        src: url('fonts/RockSalt-Regular.woff2') format('woff2');
+        }
+
+      @font-face {
+        font-family: 'InconsolataRegular';
+        src: url('fonts/Inconsolata-Regular.woff2') format('woff2');
+        }
+
+      @font-face {
+        font-family: 'ConcertOneRegular';
+        src: url('fonts/ConcertOne-Regular.woff2') format('woff2');
+        }
+
+      @font-face {
+        font-family: 'RobotoRegular';
+        src: url('fonts/Roboto-Regular.woff2') format('woff2');
+        }
+
+      @font-face {
+        font-family: 'RobotoBold';
+        src: url('fonts/Roboto-Bold.woff2') format('woff2');
+        }
+
+ 
+        ]]>
+        
+    </style>
+  </defs>
+
+ 
+  <rect x="0" y="0" width="4200" height="2970" fill="#ffffff" stroke="#0000ff" opacity="0.75" />
+<g id="BlattTitel" transform="translate(2100,100)">
+  <text name="handle-id" visibility="visible" x="-500" y="0" fill="#000000">
+    <tspan name="KlarText" text-decoration="underline" font-size="14px">BlattTitel</tspan>
+  </text>
+  <!-- payload Start -->
+  <text font-family="sans-serif" fill="#5d8aa8">
+    <tspan name="TitelText" text-anchor="middle" text-decoration="underline" font-size="30mm" font-family="PermanentMarker">Titel in blau hoffentlich</tspan>
+    <tspan name="UntertitelText" x="-315" text-anchor="begin" dy="60" font-family="RobotoBold" font-size="10mm">name=UntertitelText</tspan>
+    <tspan name="Untertitel2Text" x="-315" text-anchor="begin" dy="60" font-family="RobotoRegular" font-size="10mm">name=Untertitel2Text</tspan>
+  </text>
+ <!-- payload End -->
+</g>
+
+</svg>
