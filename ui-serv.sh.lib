@@ -1,0 +1,128 @@
+
+
+function newSVG {
+# set -v; set -x
+    local usage="$FUNCNAME <NewFile.svg>  [ ''|<Vorlage.svg> ]"
+    local NewFile="${1:?$usage}"
+    local VorlageFile="${2?$usage}"
+
+    if [[ -z $VorlageFile ]] ; then
+	VorlageFile="${ProgDir}/A3quer---1stLevelVorlage.svg"
+    fi		
+    local VorlageData="${VorlageFile%.svg}"
+    local NewData="${NewFile%.svg}"
+# set +v ; set +x
+    
+    # wird was überschrieben?
+    local flag_overwrite=true    # default
+    if [[ -e "$NewFile" || -e "$NewData" ]] ; then
+	read -p "File $(basename $NewFile) überschreiben? [j/n]: " -n 1 -r
+	if [[ $REPLY =~ ^[YyJj]$ ]] ; then
+	    flag_overwrite=true
+	elif [[ $REPLY =~ ^[Nn]$ ]] ; then
+	    flag_overwrite=false
+	else
+	    echo "Bitte antworten Sie mit J/N. Abbruch"
+	    return 0
+	fi
+    fi
+
+    # Datenverzeichnis anlegen
+    if [[ ! -d "${NewData}" ]] ; then
+	mkdir -p "${NewData}/"  || echo "ERROR in $FUNCNAME: mkdir $NewData"
+    fi
+
+    
+    if [[ $flag_overwrite == false ]] ; then
+	# kein Überschreiben erlaubt, also Abbruch
+	# ... oder später vielleicht gleich öffnen 
+
+	echo "Abbruch. Schon vorhanden: >|$NewFile|<"
+	return 0
+	
+    elif [[ $flag_overwrite == true ]] ; then
+	# überschreiben erlaubt
+
+	cliXML_save "$VorlageFile" "$NewFile" "$VorlageData" "$NewData"
+
+    else
+	echo "ERROR. flag_overwrite unhandled:>|$flag_overwrite|<. Abbruch"
+	return 1
+    fi
+
+}
+
+
+function openSVG {
+    local usage="$FUNCNAME <Path2File.svg>"
+    # global in this function (!)
+    File2View="${1:?$usage}"
+
+    if [[ ! $File2View =~ \.svg$ ]] ; then
+        echo "ERROR: Datei muss .svg Endung haben"
+        return 1
+    fi
+    
+    Data2View="${File2View%.svg}"
+    Font2View="$(dirname "$File2View")/fonts"
+    
+    # die lokale Kopie, um das Original nicht zu gefährden
+    SvgCMD_File2View="${File2View}.VIEW.svg"
+    SvgCMD_Data2View="${SvgCMD_File2View%.svg}"
+    SvgCMD_Font2View="$(dirname "$SvgCMD_File2View")"
+
+
+
+    if [[ -e "${SvgCMD_File2View}" ]] ; then
+	read -p "Kann VIEW.svg überschrieben werden? [j/n]: " -n 1 -r
+	if [[ $REPLY =~ ^[YyJj]$ ]] ; then
+	    cliXML_save "$File2View" "$SvgCMD_File2View" "$Data2View" "$SvgCMD_Data2View"
+	else
+            echo "" 
+            echo "vorhandene Dateien werden nicht überschrieben "
+	fi
+    else
+	cliXML_save "$File2View" "$SvgCMD_File2View" "$Data2View" "$SvgCMD_Data2View"
+    fi
+    
+    setRootSvgSize "$SvgCMD_File2View" 100vw 100vh
+
+    # printf $FMTstr  SvgCMD_File2View ">|$SvgCMD_File2View>|<"
+
+    "$PfadUndBrowser"  "file://$(realpath "$SvgCMD_File2View" | sed 's~/mnt/\([a-z]\)/~/\1:/~')"
+
+    if [[ -n "$WSL_DISTRO_NAME" ]] ; then
+        # we are in WSL of Windows Host
+        : # do nothing
+    else
+	     # we think we are on plain linux
+        export ActVIEWPORT_id="$(xdotool search --sync --onlyvisible --name  "$ViewerWindowTitle" )"
+        printf $FMTstr ActVIEWPORT_id ">|$ActVIEWPORT_id|<"
+    fi
+
+
+
+
+}
+
+function saveSVG {
+    usage="$FUNCNAME ''"
+    Dummy="${1:?$usage}"
+
+    cliXML_save "$SvgCMD_File2View" "$File2View" "$SvgCMD_Data2View" "$Data2View" || echo "Hat nicht funktioniert"
+}
+
+function saveAsSVG {
+    usage="$FUNCNAME '' "
+    NewFilePath="${1:?$usage}"
+    
+    read -p "Neuer Dateipfad für $File2View ?:> " -r NewFilePath
+    if [[ ! -z $NewFilePath ]] ; then
+        NewData2View="${NewFilePath%.svg}"
+        mkdir -p "$NewData2View"
+        cliXML_save "$SvgCMD_File2View" "$NewFilePath" "$SvgCMD_Data2View" "$NewData2View"  || echo "Hat nicht funktioniert"
+    else
+	echo "Kein NeuFilePath angegeben. Abbruch"
+    fi
+
+}
